@@ -67,10 +67,11 @@ public class Main {
 
 	// 1. Вывести все таблицы
 	private static void listTables() {
-		try (Connection conn = getConnection();
-				ResultSet rs = conn.getMetaData().getTables(null, null, "%", new String[] { "TABLE" })) {
+		try (Connection conn = getConnection()) {
+			String catalog = conn.getCatalog(); // Получаем имя текущей базы
+			ResultSet rs = conn.getMetaData().getTables(catalog, null, "%", new String[] { "TABLE" });
 
-			System.out.println("\nТаблицы в базе данных:");
+			System.out.println("\nТаблицы в базе данных '" + catalog + "':");
 			boolean found = false;
 			while (rs.next()) {
 				System.out.println("- " + rs.getString("TABLE_NAME"));
@@ -78,6 +79,7 @@ public class Main {
 			}
 			if (!found)
 				System.out.println("Нет таблиц.");
+			rs.close();
 		} catch (SQLException e) {
 			System.err.println("Ошибка при получении таблиц: " + e.getMessage());
 		}
